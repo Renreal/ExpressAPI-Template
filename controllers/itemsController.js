@@ -11,6 +11,8 @@ const getItems = async (req, res) => {
 };
 
 const addItem = async (req, res) => {
+  console.log("Incoming body:", req.body);
+
   const { name, description } = req.body;
   try {
     const newItem = await Item.createItem(name, description);
