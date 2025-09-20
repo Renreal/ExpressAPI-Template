@@ -15,14 +15,13 @@
 // });
 
 // module.exports = pool;
-
 const { Pool } = require("pg");
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false, // required for Supabase + Vercel
-  },
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
 });
 
 module.exports = pool;
