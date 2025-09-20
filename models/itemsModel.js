@@ -5,10 +5,10 @@ const getAllItems = async () => {
   return result.rows;
 };
 
-const createItem = async (name, description) => {
+const createItem = async (name, address, message) => {
   const result = await pool.query(
-    "INSERT INTO items (name, description) VALUES ($1, $2) RETURNING *",
-    [name, description]
+    "INSERT INTO items (name, address, message) VALUES ($1, $2, $3) RETURNING *",
+    [name, address, message]
   );
   return result.rows[0];
 };

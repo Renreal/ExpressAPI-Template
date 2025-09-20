@@ -13,9 +13,9 @@ const getItems = async (req, res) => {
 const addItem = async (req, res) => {
   console.log("Incoming body:", req.body);
 
-  const { name, description } = req.body;
+  const { name, address, message  } = req.body;
   try {
-    const newItem = await Item.createItem(name, description);
+    const newItem = await Item.createItem(name, address, message);
     res.status(201).json(newItem);
   } catch (err) {
     console.error(err);
