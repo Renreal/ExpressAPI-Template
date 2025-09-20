@@ -5,8 +5,8 @@ const getItems = async (req, res) => {
     const items = await Item.getAllItems();
     res.json(items);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database error" });
+    console.error("DB ERROR:", err); // log full error in Vercel
+    res.status(500).json({ error: err.message }); // send error reason
   }
 };
 
@@ -18,8 +18,8 @@ const addItem = async (req, res) => {
     const newItem = await Item.createItem(name, address, message);
     res.status(201).json(newItem);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database error" });
+    console.error("DB ERROR:", err); // log full error in Vercel
+    res.status(500).json({ error: err.message }); // send error reason
   }
 };
 
