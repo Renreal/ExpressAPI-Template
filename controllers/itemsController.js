@@ -2,11 +2,24 @@ const Item = require("../models/itemsModel");
 const supabase = require("../config/supabaseClient");
 const { randomUUID } = require("crypto");
 
-
 const getItems = async (req, res) => {
   try {
     const items = await Item.getAllItems();
-    res.json(items);
+
+    // Get default incognito icon public URL
+    const { data: defaultImageData } = supabase.storage
+      .from("testimonials")
+      .getPublicUrl("witnesses/incognito-icon.png");
+
+    const defaultImage = defaultImageData.publicUrl;
+
+    // Replace null image_url with fallback
+    const itemsWithFallback = items.map((item) => ({
+      ...item,
+      image_url: item.image_url || defaultImage,
+    }));
+
+    res.json(itemsWithFallback);
   } catch (err) {
     console.error("DB ERROR:", err);
     res.status(500).json({ error: err.message });
@@ -25,7 +38,6 @@ const addItem = async (req, res) => {
         // Generate unique filename inside witnesses/ folder
         const fileName = `witnesses/${randomUUID()}-${file.originalname}`;
 
-
         // Upload file to Supabase
         const { error: uploadError } = await supabase.storage
           .from("testimonials")
@@ -43,15 +55,22 @@ const addItem = async (req, res) => {
         imageUrl = data.publicUrl;
       } catch (uploadErr) {
         console.error("Supabase upload failed:", uploadErr);
-        // Fallback: let API still work even if image fails
-        imageUrl = null;
+        imageUrl = null; // fallback handled in GET
       }
     }
 
     // Insert into DB (works even if imageUrl = null)
     const newItem = await Item.createItem(name, address, message, imageUrl);
 
-    res.status(201).json(newItem);
+    // Apply fallback immediately in the response
+    const { data: defaultImageData } = supabase.storage
+      .from("testimonials")
+      .getPublicUrl("witnesses/incognito-icon.png");
+
+    res.status(201).json({
+      ...newItem,
+      image_url: newItem.image_url || defaultImageData.publicUrl,
+    });
   } catch (err) {
     console.error("UPLOAD/DB ERROR:", err);
     res.status(500).json({ error: err.message });
