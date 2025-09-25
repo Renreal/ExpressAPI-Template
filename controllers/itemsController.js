@@ -1,6 +1,7 @@
 const Item = require("../models/itemsModel");
 const supabase = require("../config/supabaseClient");
-const { v4: uuidv4 } = require("uuid");
+const { randomUUID } = require("crypto");
+
 
 const getItems = async (req, res) => {
   try {
@@ -22,7 +23,8 @@ const addItem = async (req, res) => {
     if (file) {
       try {
         // Generate unique filename inside witnesses/ folder
-        const fileName = `witnesses/${uuidv4()}-${file.originalname}`;
+        const fileName = `witnesses/${randomUUID()}-${file.originalname}`;
+
 
         // Upload file to Supabase
         const { error: uploadError } = await supabase.storage
