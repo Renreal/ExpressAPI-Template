@@ -5,13 +5,13 @@ const getAllItems = async () => {
   return result.rows;
 };
 
-const createItem = async (name, address, message) => {
+const createItem = async (name, address, message, imageUrl) => {
   const result = await pool.query(
-    "INSERT INTO items (name, address, message) VALUES ($1, $2, $3) RETURNING *",
-    [name, address, message]
+    "INSERT INTO items (name, address, message, image_url) VALUES ($1, $2, $3, $4) RETURNING *",
+    [name, address, message, imageUrl]
   );
   return result.rows[0];
 };
 
 module.exports = { getAllItems, createItem };
-//   Database interaction functions for 'items' table
+//   Model functions for interacting with the items table

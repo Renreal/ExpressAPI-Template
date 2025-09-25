@@ -1,27 +1,59 @@
 const Item = require("../models/itemsModel");
+const supabase = require("../config/supabaseClient");
+const { v4: uuidv4 } = require("uuid");
 
 const getItems = async (req, res) => {
   try {
     const items = await Item.getAllItems();
     res.json(items);
   } catch (err) {
-    console.error("DB ERROR:", err); // log full error in Vercel
-    res.status(500).json({ error: err.message }); // send error reason
+    console.error("DB ERROR:", err);
+    res.status(500).json({ error: err.message });
   }
 };
 
 const addItem = async (req, res) => {
-  console.log("Incoming body:", req.body);
-
-  const { name, address, message  } = req.body;
   try {
-    const newItem = await Item.createItem(name, address, message);
+    const { name, address, message } = req.body;
+    const file = req.file; // multer puts uploaded file here
+
+    let imageUrl = null;
+
+    if (file) {
+      try {
+        // Generate unique filename inside witnesses/ folder
+        const fileName = `witnesses/${uuidv4()}-${file.originalname}`;
+
+        // Upload file to Supabase
+        const { error: uploadError } = await supabase.storage
+          .from("testimonials")
+          .upload(fileName, file.buffer, {
+            contentType: file.mimetype,
+          });
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data } = supabase.storage
+          .from("testimonials")
+          .getPublicUrl(fileName);
+
+        imageUrl = data.publicUrl;
+      } catch (uploadErr) {
+        console.error("Supabase upload failed:", uploadErr);
+        // Fallback: let API still work even if image fails
+        imageUrl = null;
+      }
+    }
+
+    // Insert into DB (works even if imageUrl = null)
+    const newItem = await Item.createItem(name, address, message, imageUrl);
+
     res.status(201).json(newItem);
   } catch (err) {
-    console.error("DB ERROR:", err); // log full error in Vercel
-    res.status(500).json({ error: err.message }); // send error reason
+    console.error("UPLOAD/DB ERROR:", err);
+    res.status(500).json({ error: err.message });
   }
 };
 
 module.exports = { getItems, addItem };
-//   Controller functions for handling item-related requests
