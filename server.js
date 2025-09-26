@@ -10,6 +10,12 @@ app.use(express.json());
 const itemsRouter = require("./routes/items");
 app.use("/items", itemsRouter);
 
+const visitorsRouter = require("./routes/visitors");
+app.use("/visitors", visitorsRouter);
+
+
+
+
 // Only listen when running locally
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;
