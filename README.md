@@ -1,10 +1,9 @@
-## dependencies
+## dependencies  
 
->npm init -y (if no package.json)
+npm init -y (if no package.json)  
+npm install express  
+npm install express cors dotenv  
 
->npm install express
->npm install express cors dotenv
 
-
-##running the api locally >>
-node server.js
+##running the api locally  
+  node server.js  
