@@ -9,7 +9,7 @@ npm install express cors dotenv
   node server.js  
 
 ## Docker Setup
-  docker build -t <imagename> .  
-  docker run -d -p <port>:<port> --name <imagename>
+  docker build -t *imagename* .  
+  docker run -d -p *port:port* --name *imagename*
 
   **this template is made for supabase type of setup**
