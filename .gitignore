@@ -39,3 +39,4 @@ coverage/
 .eslintcache
 .parcel-cache/
 
+.dockerignore
