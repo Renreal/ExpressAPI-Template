@@ -5,10 +5,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Environment variables
-.env
-.env.test
-.env.production
+# # Environment variables
+# .env
+# .env.test
+# .env.production
 
 # Logs
 logs
