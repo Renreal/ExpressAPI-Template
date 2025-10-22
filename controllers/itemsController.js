@@ -6,14 +6,12 @@ const getItems = async (req, res) => {
   try {
     const items = await Item.getAllItems();
 
-    // Get default incognito icon public URL
     const { data: defaultImageData } = supabase.storage
       .from("testimonials")
       .getPublicUrl("witnesses/incognito-icon.png");
 
     const defaultImage = defaultImageData.publicUrl;
 
-    // Replace null image_url with fallback
     const itemsWithFallback = items.map((item) => ({
       ...item,
       image_url: item.image_url || defaultImage,
@@ -29,16 +27,14 @@ const getItems = async (req, res) => {
 const addItem = async (req, res) => {
   try {
     const { name, address, message } = req.body;
-    const file = req.file; // multer puts uploaded file here
+    const file = req.file;
 
     let imageUrl = null;
 
     if (file) {
       try {
-        // Generate unique filename inside witnesses/ folder
         const fileName = `witnesses/${randomUUID()}-${file.originalname}`;
 
-        // Upload file to Supabase
         const { error: uploadError } = await supabase.storage
           .from("testimonials")
           .upload(fileName, file.buffer, {
@@ -47,7 +43,6 @@ const addItem = async (req, res) => {
 
         if (uploadError) throw uploadError;
 
-        // Get public URL
         const { data } = supabase.storage
           .from("testimonials")
           .getPublicUrl(fileName);
@@ -55,14 +50,12 @@ const addItem = async (req, res) => {
         imageUrl = data.publicUrl;
       } catch (uploadErr) {
         console.error("Supabase upload failed:", uploadErr);
-        imageUrl = null; // fallback handled in GET
+        imageUrl = null;
       }
     }
 
-    // Insert into DB (works even if imageUrl = null)
     const newItem = await Item.createItem(name, address, message, imageUrl);
 
-    // Apply fallback immediately in the response
     const { data: defaultImageData } = supabase.storage
       .from("testimonials")
       .getPublicUrl("witnesses/incognito-icon.png");
