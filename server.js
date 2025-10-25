@@ -7,13 +7,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// get and create data to items table
 const itemsRouter = require("./routes/items");
 app.use("/items", itemsRouter);
 
+// keeps track of visitors
 const visitorsRouter = require("./routes/visitors");
 app.use("/visitors", visitorsRouter);
 
-
+// crud example for user-specific data
+const userDataRouter = require("./routes/userData");
+app.use("/users", userDataRouter);
 
 
 // Only listen when running locally
